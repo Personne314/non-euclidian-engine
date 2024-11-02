@@ -6,7 +6,7 @@ project(CppProjectTemplate LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(EXEC_NAME "grcc")
-# set(LIBRARIES )
+set(LIBRARIES -lGL -lGLEW -lSDL2 -lSDL2_image -lSDL2_mixer -lSDL2_ttf)
 set(DEBUG_FLAGS -g -Wall -Wextra)
 set(RELEASE_FLAGS -O3)
 
