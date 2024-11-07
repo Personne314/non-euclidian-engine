@@ -4,7 +4,7 @@
 
 
 
-// Renvoie la taille d'un type correspondant à une constante d'OpenGL.
+// Returns the size in memory of types described by OpenGL constants.
 int sizeFromGLType(int type) {
 	switch (type) {
 	case GL_FLOAT:	return sizeof(float);
@@ -16,51 +16,49 @@ int sizeFromGLType(int type) {
 }
 
 
-
-// Constructeur.
+// Constructor.
 VAO::VAO() {
 	glGenVertexArrays(1, &m_vao);
 }
 
-// Destructeur.
+// Destructor.
 VAO::~VAO() {
 	if(glIsVertexArray(m_vao) == GL_TRUE) glDeleteVertexArrays(1, &m_vao);
 }
 
 
-// Fonction de nettoyage du VBO.
+// Clean the VAO and create an empty one.
 void VAO::clean() {
 	if(glIsVertexArray(m_vao) == GL_TRUE) glDeleteVertexArrays(1, &m_vao);
 	glGenVertexArrays(1, &m_vao);
 }
 
 
-// Envoie les données au VAO.
-// data : liste de tableaux de vecteurs de données.
-// sizes : dimension des vecteurs de data.
-// array_ids : ids des arrays avec lesquelles lier les données de data.
-// gl_types : types des données des listes de data. 
-// buffer_len : nombre de vecteur dans les listes de data.
-// n : nombre de listes dans data, d'éléments dans sizes, array_ids
-// et gl_types.
+// Sends data to the VAO.
+// data: list of arrays containing data vectors.
+// sizes: dimension of the data vectors.
+// array_ids: IDs of the arrays to link with the data in data.
+// gl_types: data types of the lists in data.
+// buffer_len: number of vectors in the lists in data.
+// n: number of lists in data, and elements in sizes, array_ids, and gl_types.
 // ----------------------------------------------------------------------------
-// On fournit n listes de buffer_len vecteurs de dimension sizes
-// le type d'une composante est gl_types, contenues dans datas, et on crée
-// un VBO. Génère un VAO et le lie au VBO.
+// Provides n lists of buffer_len vectors with dimensions sizes.
+// The type of a component is gl_types, contained in data, and a VBO is created.
+// Generates a VAO and links it to the VBO.
 void VAO::pushData(void** data, int* sizes, int* array_ids, 
 int* gl_types, int buffer_len, int n) {
 	clean();
 
-	// Génère le VBO.
+	// Create the VBO.
 	int type_sizes[n];
 	for (int i = 0; i < n; i++) type_sizes[i] = sizeFromGLType(gl_types[i]);
 	m_vbo.pushData(data, sizes, type_sizes, buffer_len, n);
 
-	// Lie le VBO au VAO.
+	// Links the VBO to the VAO.
 	glBind();
 		m_vbo.glBind();
 
-			// Lie les arrays et met à jour l'offset.
+			// Links arrays and update offset.
 			long long int offset = 0;
 			for (int i = 0; i < n; i++) {
 				glVertexAttribPointer(array_ids[i], sizes[i], gl_types[i], GL_FALSE, 0, (void*)(offset));
@@ -71,4 +69,20 @@ int* gl_types, int buffer_len, int n) {
 		m_vbo.glUnbind();
 	glUnbind();
 
+}
+
+
+// Returns the number of vertices.
+int VAO::getSize() const {
+	return m_vbo.getSize();
+}
+
+// Binds the VAO.
+void VAO::glBind() const {
+	glBindVertexArray(m_vao);
+}
+
+// Unbinds the VAO.
+void VAO::glUnbind() const {
+	glBindVertexArray(0);
 }

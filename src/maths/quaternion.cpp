@@ -4,235 +4,183 @@
 
 
 
-
-
-// Constructeur.
+// Constructor.
 Quaternion::Quaternion() {
-    Quaternion(0,0,0,1);
+	Quaternion(0,0,0,1);
 }
 
-
-
-// Constructeur.
-Quaternion::Quaternion(glm::vec3 axis, double angle) {
-
-    // Normalise l'axe et calcule le cos et sin de l'angle.
-    axis = glm::normalize(axis);
-    double s = std::sin(angle/2.0);
-    double c = std::cos(angle/2.0);
-
-    // En déduit les coordonnées du quaternion.
-    this->x = s*axis.x;
-    this->y = s*axis.y;
-    this->z = s*axis.z;
-    this->w = c;
-
+// Copy constructor.
+Quaternion::Quaternion(const Quaternion &q) {
+	this->w = q.w;
+	this->x = q.x;
+	this->y = q.y;
+	this->z = q.z;
 }
 
-
-
-// Constructeur.
-Quaternion::Quaternion(double x, double y, double z, double w) {
-    this->x = x;
-    this->y = y;
-    this->z = z;
-    this->w = w;
+// Constructor.
+Quaternion::Quaternion(glm::vec3 axis, float angle) {
+	axis = glm::normalize(axis);
+	float s = std::sin(angle/2.0);
+	this->w = std::cos(angle/2.0);
+	this->x = s*axis.x;
+	this->y = s*axis.y;
+	this->z = s*axis.z;
 }
 
+// Constructor.
+Quaternion::Quaternion(float x, float y, float z, float w) {
+	this->x = x;
+	this->y = y;
+	this->z = z;
+	this->w = w;
+}
 
-
-// Destructeur.
+// Destructor.
 Quaternion::~Quaternion() {
 }
 
 
-
-
-
-// Somme de quaternions.
-Quaternion Quaternion::operator+(const Quaternion& q) const {
-    return Quaternion(x+q.x, y+q.y, z+q.z, w+q.w);
+// Quaternion addition.
+Quaternion operator+(Quaternion q1, const Quaternion& q2) {
+	q1.x += q2.x; q1.y += q2.y; q1.z += q2.z; q1.w += q2.w;
+	return q1;
 }
 
-
-
-// Différence de quaternions.
-Quaternion Quaternion::operator-(const Quaternion& q) const {
-    return Quaternion(x-q.x, y-q.y, z-q.z, w-q.w);
+// Quaternion substraction.
+Quaternion operator-(Quaternion q1, const Quaternion& q2) {
+	q1.x -= q2.x; q1.y -= q2.y; q1.z -= q2.z; q1.w -= q2.w;
+	return q1;
 }
 
-
-
-// Opposé du quaternion.
-Quaternion Quaternion::operator-() const {
-    return Quaternion(-x, -y, -z, -w);
+// Quaternion negation.
+Quaternion operator-(Quaternion q) {
+	q.x = -q.x; q.y = -q.y; q.z = -q.z; q.w = -q.w;
+	return q;
 }
 
-
-
-// Produit de quaternions.
-Quaternion Quaternion::operator*(const Quaternion& q) const {
-    return Quaternion (
-        w*q.x + x*q.x + y*q.z - z*q.y,
-        w*q.y - x*q.z + y*q.w + z*q.x,
-        w*q.z + x*q.y - y*q.x + z*q.w,
-        w*q.w + x*q.x + y*q.y + z*q.z
-    );
+// Quaternion multiplication.
+Quaternion operator*(const Quaternion& q1, const Quaternion& q2) {
+	return Quaternion (
+		q1.w*q2.x + q1.x*q2.x + q1.y*q2.z - q1.z*q2.y,
+		q1.w*q2.y - q1.x*q2.z + q1.y*q2.w + q1.z*q2.x,
+		q1.w*q2.z + q1.x*q2.y - q1.y*q2.x + q1.z*q2.w,
+		q1.w*q2.w + q1.x*q2.x + q1.y*q2.y + q1.z*q2.z
+	);
 }
 
-
-
-// Produit par un scalaire à droite.
-Quaternion Quaternion::operator*(double v) const {
-    return Quaternion(x*v, y*v, z*v, w*v);
+// Right scalar multiplication.
+Quaternion operator*(Quaternion q, float v) {
+	q.x *= v; q.y *= v; q.z *= v; q.w *= v;
+	return q;
 }
 
-
-
-// Division par un scalaire à droite.
-Quaternion Quaternion::operator/(double v) const {
-    return Quaternion(x/v, y/v, z/v, w/v);
+// Right scalar division.
+Quaternion operator/(Quaternion q, float v) {
+	q.x /= v; q.y /= v; q.z /= v; q.w /= v;
+	return q;
 }
 
+// Left scalar multiplication.
+Quaternion operator*(float v, Quaternion q) {
+	q.x *= v; q.y *= v; q.z *= v; q.w *= v;
+	return q;
+}
 
-
-
-
-// Opérateur d'affectation.
+// Left scalar division.
+Quaternion operator/(float v, Quaternion q) {
+	return Quaternion(0,0,0,v) * q.inv();
+}
+// Affectation operator.
 Quaternion& Quaternion::operator=(const Quaternion& q) {
-    this->x = q.x;
-    this->y = q.y;
-    this->z = q.z;
-    this->w = q.w;
-    return *this;
+	this->x = q.x;
+	this->y = q.y;
+	this->z = q.z;
+	this->w = q.w;
+	return *this;
 }
 
-
-
-// Opérateur d'affectation d'addition.
+// Addition affectation operator.
 Quaternion& Quaternion::operator+=(const Quaternion& q) {
-    this->x += q.x;
-    this->y += q.y;
-    this->z += q.z;
-    this->w += q.w;
-    return *this;
+	this->x += q.x;
+	this->y += q.y;
+	this->z += q.z;
+	this->w += q.w;
+	return *this;
 }
 
-
-
-// Opérateur d'affectation de différence.
+// Substraction affectation operator.
 Quaternion& Quaternion::operator-=(const Quaternion& q) {
-    this->x -= q.x;
-    this->y -= q.y;
-    this->z -= q.z;
-    this->w -= q.w;
-    return *this;
+	this->x -= q.x;
+	this->y -= q.y;
+	this->z -= q.z;
+	this->w -= q.w;
+	return *this;
 }
 
-
-
-// Opérateur d'affectation de produit.
+// Multiplication affectation operator.
 Quaternion& Quaternion::operator*=(const Quaternion& q) {
-    Quaternion res = (*this) * q;
-    (*this) = res;
-    return *this;
+	Quaternion res = (*this)*q;
+	(*this) = res;
+	return *this;
+}
+
+// Scalar multiplication affectation operator.
+Quaternion& Quaternion::operator*=(const float v) {
+	this->x *= v;
+	this->y *= v;
+	this->z *= v;
+	this->w *= v;
+	return *this;
+}
+
+// Division affectation operator.
+Quaternion& Quaternion::operator/=(const float v) {
+	this->x /= v;
+	this->y /= v;
+	this->z /= v;
+	this->w /= v;
+	return *this;
 }
 
 
-
-// Opérateur d'affectation de produit par un scalaire.
-Quaternion& Quaternion::operator*=(const double v) {
-    this->x *= v;
-    this->y *= v;
-    this->z *= v;
-    this->w *= v;
-    return *this;
-}
-
-
-
-// Opérateur d'affectation de division par un scalaire.
-Quaternion& Quaternion::operator/=(const double v) {
-    this->x /= v;
-    this->y /= v;
-    this->z /= v;
-    this->w /= v;
-    return *this;
-}
-
-
-
-
-
-// Rotation de vecteur selon le quaternion.
+// Vector rotation by this quaternion.
 void Quaternion::rotation(glm::vec3& v) const {
-    glm::vec3 xyz = glm::vec3(x,y,z);
-    glm::vec3 t = 2.0f*glm::cross(xyz, v);
-    v += static_cast<float>(w)*t + glm::cross(xyz, t);
+	glm::vec3 xyz = glm::vec3(x,y,z);
+	glm::vec3 t = 2.0f*glm::cross(xyz, v);
+	v += w*t + glm::cross(xyz, t);
 }
 
 
-
-
-
-// Normalise le quaternion.
+// Normalizes the quaternion.
 Quaternion& Quaternion::normalize() {
-    return (*this) /= norm();
+	return (*this) /= norm();
 }
 
 
-
-
-
-// Norme du quaternion.
-double Quaternion::norm() const {
-    return sqrt(x*x + y*y + z*z + w*w);
+// Returns the quaternion norm.
+float Quaternion::norm() const {
+	return sqrt(x*x + y*y + z*z + w*w);
 }
 
+// Returns this quaternion normalized.
+Quaternion Quaternion::normalized() const {
+	float n = norm();
+	return Quaternion(x/n, y/n, z/n, w/n);
+}
 
-
-// Conjugué du quaternion.
+// Returns this quaternion conjuguate.
 Quaternion Quaternion::conj() const {
-    return Quaternion(-x, -y, -z, w);
+	return Quaternion(-x, -y, -z, w);
 }
 
-
-
-// Inverse du quaternion.
+// Returns this quaternion inverse.
 Quaternion Quaternion::inv() const {
-    double n = norm();
-    return conj() / (n*n);
+	float n = norm();
+	return conj() / (n*n);
 }
 
-
-
-// Renvoie un string représentant le quaternion.
-std::string Quaternion::str() const {
-    return "[" + std::to_string(x) + ", " + std::to_string(y) 
-        + ", " + std::to_string(z) + ", " + std::to_string(w) + "]";
-}
-
-
-
-
-
-// Surcharge de l'opérateur d'égalité.
-bool operator==(Quaternion const& q1, Quaternion const& q2) {
-    return q1.w == q2.w && q1.x == q2.x && q1.y == q2.y && q1.z == q2.z;
-}
-
-
-
-
-
-// Produit par un scalaire à gauche.
-Quaternion operator*(double s, const Quaternion& q) {
-    return q*s;
-}
-
-
-
-// Division d'un scalaire par un quaternion.
-Quaternion operator/(double s, const Quaternion& q) {
-    return Quaternion(0,0,0,s) * q.inv();
+// Convert this quaternion into it string representation.
+std::string Quaternion::to_string() const {
+	return "[" + std::to_string(x) + ", " + std::to_string(y) 
+		+ ", " + std::to_string(z) + ", " + std::to_string(w) + "]";
 }

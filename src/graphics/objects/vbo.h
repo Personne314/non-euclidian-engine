@@ -4,49 +4,32 @@
 
 
 
-// Class VBO : Permet de gérer un Vertex Buffer Object.
+// Class VBO : Use to create and use a Vertex Buffer Object.
 class VBO {
 public :
 
-	// Constructeur, destructeur.
+	// Constructor, destructor.
 	VBO();
 	~VBO();
 
-	// Nettoie les données du VBO.
+	// Cleans VBO.
 	void clean();
 
-	// Envoie des données au VBO.
+	// Function to push data to the VBO.
 	void pushData(void** data, int* sizes, int* type_sizes, 
 		int buffer_len, int n);
 
-	// Renvoie le nombre de vertices.
+	// Returns the number of vertices.
 	int getSize() const;
 
-	// Fonctions de bind.
+	// Bind and unbind functions.
 	void glBind() const;
 	void glUnbind() const;
 
 private :
 
-	// ID du VBO et taille.
+	// VBO id.
 	GLuint m_vbo;
 	int m_size;
 
 };
-
-
-
-// Renvoie le nombre de vertices.
-inline int VBO::getSize() const {
-	return m_size;
-}
-
-// Bind le VBO.
-inline void VBO::glBind() const {
-	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-}
-
-// Unbind le VBO.
-inline void VBO::glUnbind() const {
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-}

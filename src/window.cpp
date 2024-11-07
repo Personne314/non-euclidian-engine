@@ -33,9 +33,9 @@ m_initState(false), m_context(), m_window(nullptr), m_events(), m_game() {
 
 		// Initialise le jeu.
 		std::cout << "Initialisation du jeu..." << std::endl;
-		m_game = std::make_unique<Game>(m_width, m_height);
+		m_game = std::make_unique<Game>(m_window, m_width, m_height);
 		if (!m_game->getInitState()) return;
-		else std::cout << "Jeu initialisé !" << std::endl;
+		else std::cout << "Moteur initialisé !" << std::endl;
 
 		// Initialisation terminée.
 		m_initState = true;
@@ -54,7 +54,6 @@ Window::~Window() {
 
 // Lance le jeu si l'initialisation est complète.
 void Window::start() {
-	std::cout << "Lancement !" << std::endl;
 	if (m_initState) loop();
 }
 
@@ -109,9 +108,9 @@ void Window::loop() {
 			timer.start();
 			m_events.pollEvents();
 			m_game->update();
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             m_game->render();
-            SDL_GL_SwapWindow(m_window);
+            //SDL_GL_SwapWindow(m_window);
 		}
 
 		// Endort le thread principal lors des temps d'inactivité.

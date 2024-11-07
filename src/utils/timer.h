@@ -4,16 +4,16 @@
 
 
 
-// Class Timer : Compte des durées.
+// Class Timer : Measure durations.
 class Timer {
 
 public :
 
-    // Constructeur, destructeur.
+    // Constructor, destructor.
     Timer();
     ~Timer();
 
-    // Manipulateurs du timer.
+    // Operations on the timer.
     void start();
     void stop();
     void pause();
@@ -26,11 +26,11 @@ public :
 
 private :
 
-    // Variables de temps.
+    // Time at the start and when paused.
     Uint32 timeStart;
     Uint32 timePause;
 
-    // Etat du timer.
+    // Timer status.
     bool started;
     bool paused;
 

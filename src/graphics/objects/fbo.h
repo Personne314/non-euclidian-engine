@@ -6,62 +6,43 @@
 
 
 
+// Class FBO : Used to create an FBO containing buffers for a rendered
+// image and its corresponding depth buffer.
 class FBO {
 public:
 
+	// Constructor, destructor.
 	FBO(int width, int height);
 	~FBO();
 
+	// OpenGL clear function.
 	void clear();
 
-	void glBind() const;
+	// OpenGL binding functions.
+	void glBind();
 	void glUnbind() const;
 
+	// Getters.
 	int getWidth() const;
 	int getHeight() const;
-	const Texture& getTexture() const;
+	const Texture &getTexture() const;
+	const Texture &getDepthTexture() const;
+	
+	// Returns the FBO state.
 	bool getInitState() const;
 
 private:
 
+	// FBO state.
 	bool m_initState;
 
+	// FBO id, color and depth texture.
 	GLuint m_fbo;
-	GLuint m_rbo;
 	Texture m_texture;
+	Texture m_depth;
 
+	// Buffers dimentions.
 	int m_width;
 	int m_height;
 
 };
-
-
-
-inline void FBO::clear() {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-}
-
-inline void FBO::glBind() const {
-	glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);  
-}
-
-inline void FBO::glUnbind() const {
-	glBindFramebuffer(GL_FRAMEBUFFER, 0); 
-	glDrawBuffer(GL_BACK); 
-}
-
-inline int FBO::getWidth() const {
-	return m_width;
-}
-
-inline int FBO::getHeight() const {
-	return m_height;
-}
-
-inline const Texture& FBO::getTexture() const {
-	return m_texture;
-}
-
-inline bool FBO::getInitState() const {
-	return m_initState;
-}

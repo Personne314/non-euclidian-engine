@@ -6,47 +6,46 @@
 
 
 
-// Constructeur.
+// Constructor.
 Texture::Texture() : 
 m_initState(false), m_id(0), m_width(0), m_height(0) {}
 
-// Constructeur.
+// Constructor.
 Texture::Texture(const Surface& surface) : 
 m_initState(false), m_id(0), m_width(0), m_height(0) {
 	load(surface);
 }
 
-// Destructeur.
+// Destructor.
 Texture::~Texture() {
 	if (m_initState) glDeleteTextures(1, &m_id);
 }
 
-#include <iostream>
-// Crée une texture à partir d'un fichier image.
+// Load a texture from a file.
 void Texture::load(const std::string& path) {
 	
-	// Charge l'image.
+	// Load the texture on a surface.
 	Surface surface;
 	surface.load(path);
 
-	// S'assure qu'elle est au bon format.
+	// Formats it.
 	Surface surface_format;
 	SDL_Rect rect = {0,0, surface.getWidth(), surface.getHeight()};
 	surface_format.createSurface(surface.getWidth(), surface.getHeight());
 	surface_format.blitSurface(surface, rect, rect);
 
-	// La converti en texture.
+	// Then converts it into an OpenGL texture.
 	load(surface_format.getWidth(), surface_format.getHeight(), surface_format.getPixels());
 
 }
 
-// Crée une texture à partir d'une surface.
+// Create a texture from a surface.
 void Texture::load(const Surface& surface) {
 	if (!surface.getInitState()) return;
 	load(surface.getWidth(), surface.getHeight(), surface.getPixels());
 }
 
-// Vide la texture actuelle.
+// Clears the current texture.
 void Texture::free() {
 	if (m_initState) glDeleteTextures(1, &m_id);
 	m_initState = false;
@@ -54,50 +53,77 @@ void Texture::free() {
 }
 
 
-// Fonction d'enregistrement de la texture.
+// Saves the texture in a file.
 void Texture::save(const std::string& path) const {
 
-	// Récupère les pixels de l'image depuis la VRAM.
+	// Gets texture pixels from VRAM.
 	GLubyte* pixels = new GLubyte[m_width*m_height*4];
 	glBind();
 		glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
 	glUnbind();
 
-	// Enregistre l'image.
+	// Converts this data into a surface, then save it in a file.
 	SDL_Surface* surface = SDL_CreateRGBSurfaceFrom(
 		pixels, m_width, m_height, 32, m_width*4, 
 		0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000
 	);
 	IMG_SavePNG(surface, path.c_str());
 
-	// Libère la mémoire.
+	// Cleans memory.
 	SDL_FreeSurface(surface);
 	delete [] pixels;
 
 }
 
 
-// Fonction de chargement d'une texture depuis ses dimensions et données brutes.
+// Loading function from raw data.
 void Texture::load(int width, int height, void* data) {
 	free();
 
-	// Enregistre les dimensions.
+	// Save the dimensions.
 	m_width = width;
 	m_height = height;
 
-	// Génère la texture.
+	// Create the texture.
 	glGenTextures(1, &m_id);
 	glBind();
 
-		// Enregistre les pixels.
+		// Save the prixels.
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 
-		// Enregistre les paramètres.
+		// Sets the texture parameters.
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-	// Texture initialisée.
+	// The texture is initialized.
 	glUnbind();
 	m_initState = true;
 
+}
+
+
+
+// Binds the texture.
+void Texture::glBind() const {
+	glBindTexture(GL_TEXTURE_2D, m_id);
+}
+
+// Unbinds the texture.
+void Texture::glUnbind() const {
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+// Returns texture width.
+int Texture::getWidth() const {
+	return m_width;
+}
+
+// Returns texture height.
+int Texture::getHeight() const {
+	return m_height;
+}
+
+// Returns the Texture init state.
+bool Texture::getInitState() const {
+	return m_initState;
 }

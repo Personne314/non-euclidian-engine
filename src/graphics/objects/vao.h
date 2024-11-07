@@ -5,49 +5,32 @@
 
 
 
-// Class VAO : Permet de gérer un Vertex Buffer Array.
+// Class VAO : Use to create and use a Vertex Array Object.
 class VAO {
 public :
 
-	// Constructeur, destructeur.
+	// Constructor, destructor.
 	VAO();
 	~VAO();
 
-	// Nettoie les données du VAO.
+	// Cleans VAO.
 	void clean();
 
-	// Envoie des données au VAO.
+	// Function to push data to the VAO.
 	void pushData(void** data, int* sizes, int* array_ids,
 		int* gl_types, int buffer_len, int n);
 
-	// Renvoie le nombre de vertices.
+	// Returns the number of vertices.
 	int getSize() const;
 
-	// Fonctions de bind.
+	// Bind and unbind functions.
 	void glBind() const;
 	void glUnbind() const;
 
 private :
 
-	// Ids du VAO et VBO associé.
+	// VAO and associed VBO ids.
 	GLuint m_vao;
 	VBO m_vbo;
 
 };
-
-
-
-// Renvoie le nombre de vertices.
-inline int VAO::getSize() const {
-	return m_vbo.getSize();
-}
-
-// Bind le VAO.
-inline void VAO::glBind() const {
-	glBindVertexArray(m_vao);
-}
-
-// Unbind le VAO.
-inline void VAO::glUnbind() const {
-	glBindVertexArray(0);
-}

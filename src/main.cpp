@@ -52,9 +52,10 @@ bool initSDL() {
 }
 
 
-
 // Main function. Initialize SDL, the game and launch it.
 int main(int argc, char* argv[]) {
+	(void)argc; 
+	(void)argv;
 
 	// SDL Initialization.
 	if (!initSDL()) return EXIT_FAILURE;

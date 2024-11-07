@@ -1,0 +1,5 @@
+.vscode
+build/debug/*
+build/release/*
+!build/debug/build_root_makefile.sh
+!build/release/build_root_makefile.sh

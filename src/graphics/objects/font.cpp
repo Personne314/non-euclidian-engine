@@ -1,71 +1,72 @@
 #include "font.h"
 
+#include <iostream>
 #include <stdexcept>
 
 
 
-// Constructeur.
-// path : chemin vers le fichier ttf.
-// size : taille de la police.
+// Constructor.
 Font::Font(const std::string& path, int size) {
 	m_font = TTF_OpenFont(path.c_str(), size);
-	if (!m_font) throw(std::runtime_error("Impossible de charger la police \"" + path + "\""));
+	if (!m_font) std::cerr << "Unable to load font \"" << path << "\"" << std::endl;
 }
 
-// Destructeur.
+// Destructor.
 Font::~Font() {
 	if (m_font) TTF_CloseFont(m_font);
 }
 
 
-// Permet de rendre un texte ASCII de la couleur color.
+// Renders a string on a surface.
 Surface Font::renderText(const std::string& text, const SDL_Color& color) const {
 	SDL_Surface* surface = TTF_RenderText_Blended(m_font, text.c_str(), color);
+	if (!surface) throw std::runtime_error("Unable to render the string \"" + text + "\" surface to RGBA8888");
 	SDL_Surface* glyph = SDL_ConvertSurface(surface, surface->format, SDL_PIXELFORMAT_RGBA8888);
 	SDL_FreeSurface(surface);
-	if (!glyph) throw std::runtime_error(
-		"Impossible de rendre la texture correspondant au texte \"" + text + "\""
-	);
+	if (!glyph) throw std::runtime_error("Unable to render the string \"" + text + "\"");
 	return Surface(glyph);
 }
 
-// Permet de rendre un texte UTF-8 de la couleur color.
+// Renders a UTF-8 string on a surface.
 Surface Font::renderUTF8(const std::string& text, const SDL_Color& color) const {
 	SDL_Surface* surface = TTF_RenderUTF8_Blended(m_font, text.c_str(), color);
+	if (!surface) throw std::runtime_error("Unable to render the UTF-8 string \"" + text + "\"");
 	SDL_Surface* glyph = SDL_ConvertSurface(surface, surface->format, SDL_PIXELFORMAT_RGBA8888);
 	SDL_FreeSurface(surface);
-	if (!glyph) throw std::runtime_error(
-		"Impossible de rendre la texture correspondant au texte \"" + text + "\""
-	);
+	if (!glyph) throw std::runtime_error("Unable to convert the UTF-8 string \"" + text + "\" surface to RGBA8888");
 	return Surface(glyph);
 }
 
 
-// Permet de redéfinir la taille de la police d'écriture.
+// Sets the font size.
 void Font::setFontSize(int size) {
 	TTF_SetFontSize(m_font, size);
 }
 
-// Permet de définir le style de la police d'écriture.
-// Le style est défini par | entre les constantes de FontStyle.
+// Sets the font style.
+// style is a combinaison of FontStyle constants.
 void Font::setFontStyle(int style) {
 	TTF_SetFontStyle(m_font, style);
 }
 
 
-// Renvoie le style de la police.
+// Returns the current font style.
 int Font::getFontStyle() const {
 	return TTF_GetFontStyle(m_font);
 }
 
-// Renvoie la taille d'un texte format ASCII passé en paramètre s'il est rendu 
-// via cette police.
-void Font::getSizeText(const std::string& path, int& x, int& y) const {
-	TTF_SizeText(m_font, path.c_str(), &x, &y);
+// Returns the size in pixel needed to render the string.
+void Font::getSizeText(const std::string& text, int& x, int& y) const {
+	TTF_SizeText(m_font, text.c_str(), &x, &y);
 }
 
-// Renvoie la taille d'un texte format UTF-8 passé en paramètre s'il est rendu
-// via cette police.
-void Font::getSizeUTF8(const std::string& path, int& x, int& y) const {
-	TTF_SizeUTF8(m_font, path.c_str(), &x, &y);
+// Returns the size in pixel needed to render the UTF-8 string. 
+void Font::getSizeUTF8(const std::string& text, int& x, int& y) const {
+	TTF_SizeUTF8(m_font, text.c_str(), &x, &y);
+}
+
+
+// Returns the Font state.
+bool Font::getInitState() const {
+	return !m_font;
 }

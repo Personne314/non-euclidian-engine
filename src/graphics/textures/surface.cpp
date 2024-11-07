@@ -4,35 +4,34 @@
 
 
 
-// Constructeur.
-// Le free de la surface passé en paramètre est géré par l'objet et ne 
-// doit pas être fait en dehors de celle-ci.
+// Constructor.
+// The deallocation of the surface passed as a parameter is managed by the object
+// and should not be done outside of it.
 Surface::Surface(SDL_Surface* surface) : m_surface(surface) {}
 
-// Constructeur de copie.
-// Déplace le pointeur de surface vers le nouvel objet. L'ancien n'est
-// plus utilisable.
+// Copy constructor.
+// Moves the surface pointer to the new object. The old one is no longer usable.
 Surface::Surface(Surface& surface) : m_surface(surface.m_surface) {
 	surface.m_surface = nullptr;
 }
 
-// Constructeur.
+// Constructor.
 Surface::Surface() : m_surface(nullptr) {}
 
-// Destructeur.
+// Destructor.
 Surface::~Surface() {
 	free();
 }
 
 
-// Vide la surface.
+// Clears the surface.
 void Surface::free() {
 	if (!m_surface) return;
 	SDL_FreeSurface(m_surface);
 	m_surface = nullptr;
 }
 
-// Permet de créer une surface vide avec des masques et paramètres prédéfinis.
+// Allows creating an empty surface with predefined masks and parameters.
 void Surface::createSurface(int width, int height, int depth, int rmask, int gmask, 
 int bmask, int amask, int flags) {
 	free();
@@ -41,52 +40,79 @@ int bmask, int amask, int flags) {
 		rmask, gmask, bmask, amask
 	);
 	if (!m_surface) {
-		std::cerr << "Erreur lors de la création d'une surface (w:" << width << ", h:"
+		std::cerr << "Error during surface creation (w:" << width << ", h:"
 		<< height << ", d:" << depth << ", R:" << rmask << ", G:" << gmask << ", B:" 
 		<< bmask << ", A:" << amask << ") : " << IMG_GetError() << std::endl;
 	}
 }
 
 
-// Permet de convertir la surface dans un format donné.
+// Allows converting the surface to a given format.
 void Surface::convertSurface(Uint32 format) {
 	SDL_Surface* temp = SDL_ConvertSurface(m_surface, m_surface->format, format);
 	if (!temp) {
-		std::cerr << "Erreur lors de la conversion d'une surface : " 
-			<< SDL_GetError() << std::endl;
+		std::cerr << "Error during surface conversion : " << SDL_GetError() << std::endl;
 		return;
 	} 
 	delete m_surface;
 	m_surface = temp;
 }
 
-// Blit une surface sur celle-ci.
+// Blits a surface onto this one.
 void Surface::blitSurface(const Surface& surface, SDL_Rect& src, SDL_Rect& dst) {
 	if (!surface.getInitState() || !m_surface) return;
 	if (SDL_BlitSurface(surface.m_surface, &src, m_surface, &dst)) {
-		std::cerr << "Erreur lors d'un blit de surfaces :" << SDL_GetError() << std::endl;
+		std::cerr << "Error during surface blit :" << SDL_GetError() << std::endl;
 	}
 }
 
-
-// Remplit la surface avec une couleur.
+// Fills the surface with a color.
 void Surface::fillRect(const SDL_Rect& rect, const SDL_Color& color) {
 	SDL_FillRect(
 		m_surface, &rect, 
-		SDL_MapRGBA(
-			m_surface->format,
-			color.r, color.g, color.b, color.a
-		)
+		SDL_MapRGBA(m_surface->format, color.r, color.g, color.b, color.a)
 	);
 }
 
 
-// Permet de charger une surface depuis un fichier image.
+// Allows loading a surface from an image file.
 void Surface::load(const std::string& path) {
 	free();
 	m_surface = IMG_Load(path.c_str());
 	if (!m_surface) {
-		std::cerr << "Erreur lors du chargement d'une surface depuis le fichier \"" 
+		std::cerr << "Error during surface loading from the file \"" 
 			<< path << "\" : " << IMG_GetError() << std::endl;
 	}
+}
+
+// Saves a surface as an image file.
+void Surface::save(const std::string& path) const {
+	IMG_SavePNG(m_surface, path.c_str());
+}
+
+
+// Returns a pointer to the pixels of the surface.
+void* Surface::getPixels() const {
+	return m_surface->pixels;
+}
+
+
+// Returns the rect of the surface.
+SDL_Rect Surface::getRect() const {
+	return {0,0, m_surface->w, m_surface->h};
+}
+
+// Returns the width of the surface.
+int Surface::getWidth() const {
+	return m_surface->w;
+}
+
+// Returns the height of the surface.
+int Surface::getHeight() const {
+	return m_surface->h;
+}
+
+// Returns the Surface init state.
+bool Surface::getInitState() const {
+	return m_surface != nullptr;
 }

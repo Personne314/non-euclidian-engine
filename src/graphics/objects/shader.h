@@ -6,59 +6,35 @@
 
 
 
-// Class Shader : Charge et compile un Shader GLSL.
+// Class Shader : Loads and compiles a GLSL shader.
 class Shader {
 
 public:
 
-	// Constructeurs, destructeur.
+	// Constructors, destructor.
 	Shader(const std::string& vertexSource, const std::string& fragmentSource, 
 		const std::vector<std::pair<int, std::string> >& attribLocation);
 	~Shader();
 
-	// Fonctions de bind et d'unbind.
+	// Bind and unbind functions.
 	void glUse() const;
 	void glUnuse() const;
 
-	// glUniformLocation.
+	// Call to glUniformLocation.
 	int getUniformLocation(std::string name) const;
 
-	// Etat d'initialisation.
+	// Returns the Shader init state.
 	bool getInitState() const;
 
 private:
 
-	// Etat d'initialisation.
+	// Init state.
 	bool m_initState;
 
-	// Fonctions de chargement.
+	// Compilation function.
 	bool compileShader(GLuint& shader, GLenum type, const std::string& source);
 
-	// IDs des shaders.
-	GLuint m_vertID;
-	GLuint m_fragID;
+	// Shader id.
 	GLuint m_progID;
 
 };
-
-
-
-// Fonctions de bind du shader.
-inline void Shader::glUse() const {
-	glUseProgram(m_progID);
-}
-
-// Fonctions d'unbind du shader.
-inline void Shader::glUnuse() const {
-	glUseProgram(0);
-}
-
-// Implémentation de glUniformLocation.
-inline int Shader::getUniformLocation(std::string name) const {
-	return glGetUniformLocation(m_progID, name.c_str());
-}
-
-// Renvoie l'état d'utilisation.
-inline bool Shader::getInitState() const {
-	return m_initState;
-}

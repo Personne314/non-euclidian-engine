@@ -8,8 +8,7 @@
 
 
 
-// Permet de définir le style de la police.
-// Redéfinition des constantes de SDL_TTF pour éviter d'avoir à l'inclure.
+// Constants used to define font style.
 enum FontStyle {
 	FONT_NORMAL			= TTF_STYLE_NORMAL,
 	FONT_BOLD			= TTF_STYLE_BOLD,
@@ -20,15 +19,15 @@ enum FontStyle {
 
 
 
-// Class Font : Permet de charger une police d'écriture TTF_Font et de la manipuler.
+// Class Font : Used to load/use a font.
 class Font {
 public:
 
-	// Constructeur, destructeur.
+	// Constructor, destructor.
 	Font(const std::string& path, int size);
 	~Font();
 
-	// Fonctions de rendu.
+	// Function used to render text.
 	Surface renderText(const std::string& text, const SDL_Color& color) const;
 	Surface renderUTF8(const std::string& text, const SDL_Color& color) const;
 
@@ -38,12 +37,15 @@ public:
 
 	// Getters.
 	int getFontStyle() const;
-	void getSizeText(const std::string& path, int& x, int& y) const;
-	void getSizeUTF8(const std::string& path, int& x, int& y) const;
+	void getSizeText(const std::string& text, int& x, int& y) const;
+	void getSizeUTF8(const std::string& text, int& x, int& y) const;
+
+	// Returns the Font state.
+	bool getInitState() const;
 
 private:
 
-	// Police d'écriture SDL.
+	// SDL_TTF font.
 	TTF_Font* m_font;
 
 };
