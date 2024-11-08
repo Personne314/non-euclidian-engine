@@ -10,41 +10,40 @@
 
 // Initializing SDL.
 bool initSDL() {
-	std::cout << "Initializing SDL..." << std::endl;
 
 	// Initialize all SDL modules.
+	std::cout << "SDL2 initialization" << std::endl;
 	if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
 		std::cerr << "SDL initialization error : " << SDL_GetError() << std::endl;
 		return false;
 
 	}
 	atexit(SDL_Quit);
-	std::cout << "SDL2 initialized !" << std::endl;
 
 	// Initialize SDL_IMG.
+	std::cout << "SDL_IMG initialization" << std::endl;
 	int imgFlags = IMG_INIT_PNG;
 	if (!(IMG_Init(imgFlags) & imgFlags)) {
 		std::cerr << "SDL_IMG initialization error : " << IMG_GetError() << std::endl;
 		return false;
 	}
 	atexit(IMG_Quit);
-	std::cout << "SDL_IMG initialized !" << std::endl;
 
 	// Initialize SDL_Mix.
+	std::cout << "SDL_Mix initialization" << std::endl;
 	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
 		std::cerr << "SDL_Mix initialization error : " << Mix_GetError() << std::endl;
 		return false;
 	}
 	atexit(Mix_Quit);
-	std::cout << "SDL_Mix initialized !" << std::endl;
 
 	// Initialize SDL_TTF.
+	std::cout << "SDL_TTF initialization" << std::endl;
 	if (TTF_Init() < 0) {
 		std::cerr << "SDL_TTF initialization error : " << TTF_GetError() << std::endl;
 		return false;
 	}
 	atexit(TTF_Quit);
-	std::cout << "SDL_TTF initialized !" << std::endl;
 
 	// Initialization done.
 	return true;
@@ -63,12 +62,12 @@ int main(int argc, char* argv[]) {
 	// Recupère les dimensions de l'écran.
 	SDL_DisplayMode dm;
 	if (SDL_GetDesktopDisplayMode(0, &dm) != 0) {
-		std::cerr << "Erreur lors de la récupération des dimensions du bureau : " << SDL_GetError() << std::endl;
+		std::cerr << "Error while getting desktop dimensions : " << SDL_GetError() << std::endl;
 		return EXIT_FAILURE;
 	}
 
 	// Crée la fenêtre et lance le jeu.
-	Window window(dm.w, dm.h, "Moteur Voxel");
+	Window window(dm.w, dm.h, "Non-Euclidian Engine");
 	window.start();
 
 }

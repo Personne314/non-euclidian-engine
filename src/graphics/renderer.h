@@ -28,6 +28,11 @@ public:
 	void glSwapWindow() const;
 	void swapBuffers();
 
+
+	// Do postprocessing using a shader.
+	void postProcess(const Shader &shader);
+
+
 	// Getters.
 	const Texture &getTexture() const;
 	const Texture &getDepthTexture() const;
@@ -52,5 +57,9 @@ private:
 	// Shader and VAO for rendering on the screen.
 	Shader m_screen_shader;
 	VAO m_screen_vao;
+
+	// Pixel dimensions.
+	float m_pixel_width;
+	float m_pixel_height;
 
 };

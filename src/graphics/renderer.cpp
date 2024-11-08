@@ -8,7 +8,7 @@ m_initState(false), m_window(window), m_fbos{FBO(w,h), FBO(w,h)}, m_current(0),
 m_screen_shader(
 	"GameData/shaders/screen.vert", "GameData/shaders/screen.frag", 
 	{{0,"in_coord"}, {1,"in_tex_coord"}}
-) {
+), m_pixel_width(1.0f/w), m_pixel_height(1.0f/h) {
 
 	// Build the VAO for screen rendering.
 	float vertices[12] = {-1,-1, 1,1, -1,1, -1,-1, 1,-1, 1,1};
@@ -46,20 +46,67 @@ void Renderer::glUnbind() const {
 	m_fbos[m_current].glUnbind();
 }
 
+
+
+
+// Do postprocessing using a shader.
+// This functions gives the pixels and depth buffers of one FBO to a 
+// shader and use the second one to store the results.
+void Renderer::postProcess(const Shader &shader) {
+	const Texture &pixel_buffer = getTexture();
+	const Texture &depth_buffer = getDepthTexture();
+	swapBuffers();
+
+	// Binds the FBO, the shader and the VAO to prepare for rendering.
+	glBind();
+	shader.glUse();
+		m_screen_vao.glBind();
+
+			// Gives the pixel size to the shader.
+			glUniform2f(shader.getUniformLocation("pixel_size"), m_pixel_width, m_pixel_height);
+
+			// Links the textures to the shader.
+			glUniform1i(shader.getUniformLocation("pixel_buffer"), 0);
+			glUniform1i(shader.getUniformLocation("depth_buffer"), 1);
+
+			// Binds the textures to the shader.
+			glActiveTexture(GL_TEXTURE0);
+			pixel_buffer.glBind();
+			glActiveTexture(GL_TEXTURE0+1);
+			depth_buffer.glBind();
+
+				// Renders.
+				glDrawArrays(GL_TRIANGLES, 0, m_screen_vao.getSize());
+
+			// Unbinds the textures.
+			glActiveTexture(GL_TEXTURE0+1);
+			glBindTexture(GL_TEXTURE_2D, 0);
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, 0);
+
+	// Unbinds the VAO, the shader and the FBO.
+		m_screen_vao.glUnbind();
+	shader.glUnuse();
+	glUnbind();
+
+}
+
+
+
 // Renders the active FBO on the screen.
 // Unbinds the active FBO.
 void Renderer::glSwapWindow() const {
-	
+
 	// Unbinds the active FBO and clears the screen.
 	glUnbind();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        
+		
 	// Renders the content of the FBO on the screen.
 	m_screen_shader.glUse();
 		m_screen_vao.glBind();
-			m_fbos[m_current].getTexture().glBind();
+			getTexture().glBind();
 			glDrawArrays(GL_TRIANGLES, 0, 6);
-			m_fbos[m_current].getTexture().glUnbind();
+			getTexture().glUnbind();
 		m_screen_vao.glUnbind();
 	m_screen_shader.glUnuse();
 
@@ -68,9 +115,10 @@ void Renderer::glSwapWindow() const {
 
 }
 
-// Swaps the active and unactive FBOs.
+// Swaps the active and unactive FBOs and clears the new active FBO.
 void Renderer::swapBuffers() {
-	m_current = (m_current + 1) % 2; 
+	m_current = (m_current + 1) % 2;
+	clear();
 }
 
 

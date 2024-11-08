@@ -7,10 +7,10 @@
 
 
 
-// Constructeur.
+// Constructor.
 Window::Window(unsigned int w, unsigned int h, const std::string& name) : 
 m_initState(false), m_context(), m_window(nullptr), m_events(), m_game() {
-	std::cout << "Initialisation de la fenêtre..." << std::endl;
+	std::cout << "Window initialization" << std::endl;
 
 	// Enregistre les dimensions.
 	m_width = w;
@@ -23,19 +23,18 @@ m_initState(false), m_context(), m_window(nullptr), m_events(), m_game() {
 		SDL_WINDOW_FULLSCREEN | SDL_WINDOW_OPENGL
 	);
 	if (!m_window) {
-		std::cerr << "Erreur lors de la création de la fenêtre : " << SDL_GetError() << std::endl;
+		std::cerr << "Window creation error : " << SDL_GetError() << std::endl;
 		return;
 	}
 
 	// Initialise OpenGL.
 	if (initGL()) {
-		std::cout << "Fenêtre initialisée !" << std::endl;
 
 		// Initialise le jeu.
-		std::cout << "Initialisation du jeu..." << std::endl;
+		std::cout << "Game initialization" << std::endl;
 		m_game = std::make_unique<Game>(m_window, m_width, m_height);
 		if (!m_game->getInitState()) return;
-		else std::cout << "Moteur initialisé !" << std::endl;
+		std::cout << "Initialization done" << std::endl;
 
 		// Initialisation terminée.
 		m_initState = true;
@@ -61,7 +60,7 @@ void Window::start() {
 
 // Initialise GLEW et le contexte OpenGL.
 bool Window::initGL() {
-	std::cout << "Initialisation d'OpenGL..." << std::endl;
+	std::cout << "OpenGL initialization" << std::endl;
 
 	// Ajout des attributs OpenGL.
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
@@ -71,12 +70,12 @@ bool Window::initGL() {
 
 	// Création du contexte OpenGL.
 	if (!(m_context = SDL_GL_CreateContext(m_window))) {
-		std::cerr << "Erreur lors de la création du Context OpenGL : " << SDL_GetError() << std::endl;
+		std::cerr << "Error during OpenGL context creation : " << SDL_GetError() << std::endl;
 		return false;   
 	} 
 	GLenum initGLEW(glewInit());
 	if (initGLEW != GLEW_OK) {
-		std::cout << "Erreur lors de l'initialisation de GLEW : "
+		std::cout << "Error during GLEW initialization : "
 			<< std::string(reinterpret_cast<const char*>(glewGetErrorString(initGLEW))) << std::endl;
 		return false;
 	}
@@ -86,11 +85,10 @@ bool Window::initGL() {
 	glDisable(GL_CULL_FACE);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
 	SDL_GL_SetSwapInterval(0);
 
 	// Initialisation terminée.
-	std::cout << "OpenGL Initialisée !" << std::endl;
 	return true;
 
 }

@@ -8,7 +8,8 @@
 
 Game::Game(SDL_Window *window, int w, int h) : m_initState(false), 
 m_camera(glm::vec3(0,6,0), glm::vec3(0,0,0), w,h),
-m_shader("GameData/shaders/shader.vert", "GameData/shaders/shader.frag", {{0, "in_Vertex"}}), 
+m_shader("GameData/shaders/shader.vert", "GameData/shaders/shader.frag", {{0, "in_coord"}}), 
+post_process("GameData/shaders/post_outline.vert", "GameData/shaders/post_outline.frag", {{0, "in_coord"}, {1, "in_tex_coord"}}), 
 m_renderer(window, w,h) {
 	m_initState = true;
 
@@ -33,8 +34,8 @@ Game::~Game() {}
 
 
 void Game::update() {
-	//m_camera.rotation(Quaternion(glm::vec3(0,1,0), 0.005));
-	//m_camera.translate(glm::vec3(0.0,0.004,0));
+	m_camera.rotation(Quaternion(glm::vec3(0,1,0), 0.005));
+	//m_camera.translate(glm::vec3(0.0,0.1,0));
 }
 
 void Game::render() {
@@ -61,6 +62,11 @@ void Game::render() {
 		m_shader.glUnuse();
 
 	m_renderer.glUnbind();
+
+
+	m_renderer.postProcess(post_process);
+
+
 	m_renderer.glSwapWindow();
 
 }

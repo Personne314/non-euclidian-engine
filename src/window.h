@@ -9,36 +9,36 @@
 
 
 
-// Class Window : Permet la création et gestion d'une fenêtre.
+// Class Window : Creates a windows with an OpenGL context.
 class Window {
 
 public :
 
-	// Constructeur, destructeur.
+	// Constructor, destructor.
 	Window(unsigned int w, unsigned int h, const std::string& name);
 	~Window();
 
-	// Lance le jeu si l'initialisation est complète.
+	// Launch the game.
 	void start();
 
 private :
 
-	// Fonction d'initialisation d'OpenGL.
+	// OpenGL initialization function.
 	bool initGL();
 
-	// Boucle principale.
+	// Main loop.
 	void loop();
 
-	// Etat d'initialisation.
+	// Init state.
 	bool m_initState;
 
-	// Attributs de la fenêtre.
+	// Window attributes.
 	SDL_GLContext m_context;
 	SDL_Window* m_window;
 	int m_width;
 	int m_height;
 
-	// Jeu et gestionnaire d'évènements.
+	// Game and event manager.
 	EventManager m_events;
 	std::unique_ptr<Game> m_game;
 

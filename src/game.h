@@ -27,6 +27,8 @@ private :
 	VAO m_vao;
 	Shader m_shader;
 
+	Shader post_process;
+
 	Renderer m_renderer;
 
 };
