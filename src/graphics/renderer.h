@@ -56,6 +56,7 @@ private:
 
 	// Shader and VAO for rendering on the screen.
 	Shader m_screen_shader;
+	VAO m_postprocess_vao;
 	VAO m_screen_vao;
 
 	// Pixel dimensions.

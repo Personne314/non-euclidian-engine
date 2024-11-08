@@ -10,14 +10,21 @@ m_screen_shader(
 	{{0,"in_coord"}, {1,"in_tex_coord"}}
 ), m_pixel_width(1.0f/w), m_pixel_height(1.0f/h) {
 
-	// Build the VAO for screen rendering.
-	float vertices[12] = {-1,-1, 1,1, -1,1, -1,-1, 1,-1, 1,1};
+	// Builds the VAO for postprocessing. It's the same but with y axis
+	// inverted, because OpenGL's weids coordinates systems.
+	float vertices[12] = {-1,1, 1,-1, -1,-1, -1,1, 1,1, 1,-1};
 	float tex_vertices[12] = {0,1, 1,0, 0,0, 0,1, 1,1, 1,0};
 	void* data[2] = {vertices, tex_vertices};
 	int sizes[2] = {2,2};
 	int array_ids[2] = {0,1};
 	int gl_types[2] = {GL_FLOAT, GL_FLOAT};
+	m_postprocess_vao.pushData(data, sizes, array_ids, gl_types, 6,2);
+	
+	// Build the VAO for screen rendering. It's the same but with y axis
+	// inverted, because OpenGL's weids coordinates systems.
+	for (int i = 0; i < 6; ++i) vertices[2*i+1] *= -1;
 	m_screen_vao.pushData(data, sizes, array_ids, gl_types, 6,2);
+
 
 	// The renderer is build.
 	m_initState = m_fbos[0].getInitState() && m_fbos[1].getInitState();
@@ -60,7 +67,7 @@ void Renderer::postProcess(const Shader &shader) {
 	// Binds the FBO, the shader and the VAO to prepare for rendering.
 	glBind();
 	shader.glUse();
-		m_screen_vao.glBind();
+		m_postprocess_vao.glBind();
 
 			// Gives the pixel size to the shader.
 			glUniform2f(shader.getUniformLocation("pixel_size"), m_pixel_width, m_pixel_height);
@@ -76,7 +83,7 @@ void Renderer::postProcess(const Shader &shader) {
 			depth_buffer.glBind();
 
 				// Renders.
-				glDrawArrays(GL_TRIANGLES, 0, m_screen_vao.getSize());
+				glDrawArrays(GL_TRIANGLES, 0, m_postprocess_vao.getSize());
 
 			// Unbinds the textures.
 			glActiveTexture(GL_TEXTURE0+1);
@@ -85,7 +92,7 @@ void Renderer::postProcess(const Shader &shader) {
 			glBindTexture(GL_TEXTURE_2D, 0);
 
 	// Unbinds the VAO, the shader and the FBO.
-		m_screen_vao.glUnbind();
+		m_postprocess_vao.glUnbind();
 	shader.glUnuse();
 	glUnbind();
 
