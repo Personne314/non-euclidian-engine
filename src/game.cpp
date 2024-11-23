@@ -8,24 +8,46 @@
 
 Game::Game(SDL_Window *window, int w, int h) : m_initState(false), 
 m_camera(glm::vec3(0,6,0), glm::vec3(0,0,0), w,h),
-m_shader("GameData/shaders/shader.vert", "GameData/shaders/shader.frag", {{0, "in_coord"}}), 
+m_shader("GameData/shaders/shader.vert", "GameData/shaders/shader.frag", {{0, "in_coord"}, {1, "in_color"}}), 
 post_process("GameData/shaders/post_outline.vert", "GameData/shaders/post_outline.frag", {{0, "in_coord"}, {1, "in_tex_coord"}}), 
 m_renderer(window, w,h) {
 	m_initState = true;
 
-	float vertices[] = {
+	float vertices[48] = {
 		-1,0,-1,
 		1, 0, 1,
 		1, 0,-1,
 		-1,0,-1,
 		-1,0, 1,
 		1, 0, 1,
+
+		-3,0,-1,
+		-1, 0, 1,
+		-1, 0,-1,
+		-3,0,-1,
+		-3,0, 1,
+		-1, 0, 1,
 	};
-	int sizes[] = {3};
-	void *data[] = {vertices};
-	int ids[] = {0};
-	int types[] = {GL_FLOAT};
-	m_vao.pushData(data, sizes, ids, types, 6, 1);
+	float color[48] = {
+		1,0,0,
+		1,0,0,
+		1,0,0,
+		1,0,0,
+		1,0,0,
+		1,0,0,
+
+		0,1,0,
+		0,1,0,
+		0,1,0,
+		0,1,0,
+		0,1,0,
+		0,1,0
+	};
+	int sizes[] = {3,3};
+	void *data[] = {vertices, color};
+	int ids[] = {0,1};
+	int types[] = {GL_FLOAT, GL_FLOAT};
+	m_vao.pushData(data, sizes, ids, types, 12, 2);
 
 }
 

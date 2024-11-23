@@ -10,10 +10,21 @@ public :
 
 	void pollEvents();
 
+	void setMouseMode(bool relative);
+
 	bool isCloseRequested() const;
 
 private :
 
-	bool closeEvent;
+	bool m_closeEvent;
+
+	bool m_relative;
+	float m_dx;
+	float m_dy;
+
+	bool left;
+	bool right;
+	bool forward;
+	bool backward;
 
 };

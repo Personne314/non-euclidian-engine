@@ -4,7 +4,7 @@
 
 
 
-EventManager::EventManager() : closeEvent(false) {}
+EventManager::EventManager() : m_closeEvent(false) {}
 EventManager::~EventManager() {}
 
 void EventManager::pollEvents() {
@@ -13,13 +13,20 @@ void EventManager::pollEvents() {
 	while (SDL_PollEvent(&event)) {
 		switch (event.type) {
 		case SDL_QUIT: 
-			closeEvent = true; 
+			m_closeEvent = true; 
 			break;
 		}
 	}
 
 }
 
+
+void EventManager::setMouseMode(bool relative) {
+	m_relative = relative;
+	SDL_SetRelativeMouseMode((SDL_bool)relative);
+}
+
+
 bool EventManager::isCloseRequested() const {
-	return closeEvent;
+	return m_closeEvent;
 }
